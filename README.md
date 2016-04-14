@@ -19,6 +19,12 @@ The variables that can be passed to this role and a brief description about them
     # Work Directory, tarball is downloaded and it is expanded (optional, default is /tmp/install )
     boost_work_dir: /tmp/install
 
+    # Options for bootstrap.sh (optional, default is empty)
+    boost_bootstrap_opt: --with-libraries=log
+
+    # Options for b2 (optional, default is empty)
+    boost_make_opt: -j 8
+
 ## Examples
 
 1) No options
