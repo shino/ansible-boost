@@ -20,6 +20,14 @@
     - bzip2-devel
   when: ansible_os_family == "RedHat"
 
+- name: Cleanup work directory
+  sudo: yes
+  file: path={{ boost_work_dir }} state=absent
+- name: Cleanup prefix directory
+  sudo: yes
+  file: path={{ boost_prefix }} state=absent
+  when: boost_prefix is defined
+
 - name: Create work directory
   file: path={{ boost_work_dir }} state=directory
 
@@ -29,22 +37,22 @@
   when: boost_prefix is defined
 
 - name: Get boost source
-  get_url: url='http://downloads.sourceforge.net/project/boost/boost/{{ boost_version }}/{{ boost_tar_name  }}' dest={{ boost_work_dir }}
+  get_url: url='http://sourceforge.net/projects/boost/files/boost/{{ boost_version }}/{{ boost_tar_name }}/download' dest={{ boost_work_dir }}
 
 - name: Unpack tarball
   command: /bin/tar jxfv {{ boost_work_dir }}/{{ boost_tar_name }} -C {{ boost_work_dir }}
 
 - name: Bootstrap Boost
-  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./bootstrap.sh
+  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./bootstrap.sh {{ boost_bootstrap_opt }}
   when: boost_prefix is not defined
 
 - name: Bootstrap Boost
-  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./bootstrap.sh --prefix={{ boost_prefix }}
+  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./bootstrap.sh --prefix={{ boost_prefix }} {{ boost_bootstrap_opt }}
   when: boost_prefix is defined
 
-- name: Make Boost
-  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./b2
-
-- name: Insall Boost
+- name: Make & Insall Boost
   sudo: yes
-  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./b2 install
+  command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./b2 {{ boost_make_opt }} install
+  register: install
+- debug: msg="{{ make.stdout_lines }}"
+
