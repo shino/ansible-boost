@@ -53,6 +53,6 @@
 - name: Make & Insall Boost
   sudo: yes
   command: chdir={{ boost_work_dir }}/{{ boost_build_dir }} ./b2 {{ boost_make_opt }} install
-  register: install
+  register: make
 - debug: msg="{{ make.stdout_lines }}"
 
